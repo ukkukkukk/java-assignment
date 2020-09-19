@@ -5,3 +5,8 @@ beacon:
   ribbon:
     isSecure: true
     listOfServers: https://beacon-network.org:443
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 30000
