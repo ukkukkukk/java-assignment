@@ -1,5 +1,6 @@
 package com.dnastack.interview.beaconsummarizer;
 
+import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSummary;
@@ -30,6 +31,11 @@ public class BeaconSummaryController {
                 .map(Organization::getName)
                 .collect(toList());
 
-        return new BeaconSummary(orgNames);
+        List<String> beaconNames = beaconClient.getBeacons()
+                .stream()
+                .map(Beacon::getName)
+                .collect(toList());
+
+        return new BeaconSummary(orgNames, beaconNames);
     }
 }

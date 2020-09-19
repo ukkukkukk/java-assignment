@@ -16,5 +16,7 @@ public interface BeaconClient {
     @GetMapping("/api/organizations")
     List<Organization> getOrganizations();
 
+    @GetMapping("/api/beacons")
+    List<Beacon> getBeacons();
 
 }
