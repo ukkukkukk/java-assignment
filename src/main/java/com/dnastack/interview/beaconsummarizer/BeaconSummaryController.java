@@ -5,6 +5,10 @@ import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSummary;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +20,12 @@ import java.util.concurrent.CompletableFuture;
 import static java.util.stream.Collectors.toList;
 
 @RestController
+
 public class BeaconSummaryController {
 
+
     @Autowired
-    private BeaconClient beaconClient;
+    private BeaconLookupService beaconLookupService;
 
     @GetMapping("/search")
     public BeaconSummary search(@RequestParam String ref,
@@ -29,10 +35,8 @@ public class BeaconSummaryController {
                                 @RequestParam String referenceAllele) throws Exception {
 
 
-        BeaconLookupService service = new BeaconLookupService(beaconClient);
-
-        CompletableFuture<List<String>> orgNamesResult = service.getOrganizations();
-        CompletableFuture<List<String>> beaconsResult = service.getBeacons();
+        CompletableFuture<List<String>> orgNamesResult = beaconLookupService.getOrganizations();
+        CompletableFuture<List<String>> beaconsResult = beaconLookupService.getBeacons();
 
         List<CompletableFuture> tasks = new ArrayList<CompletableFuture>();
 
@@ -47,4 +51,6 @@ public class BeaconSummaryController {
 
         return new BeaconSummary(orgNames, beaconNames);
     }
+
+
 }
