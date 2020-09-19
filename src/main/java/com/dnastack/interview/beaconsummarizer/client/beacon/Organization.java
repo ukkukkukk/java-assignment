@@ -12,4 +12,9 @@ public class Organization {
     private LocalDate createdDate;
     private String url;
     private String address;
+
+    public String getName ()
+    {
+        return this.name;
+    }
 }
