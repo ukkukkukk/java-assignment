@@ -14,9 +14,9 @@ public class Beacon {
     private String description;
     private String homePage;
     private String email;
-    private boolean aggregator;
-    private boolean visible;
-    private boolean enabled;
+    private Boolean aggregator;
+    private Boolean visible;
+    private Boolean enabled;
     private List<String> supportedReferences;
 
     public String getName() {
@@ -25,5 +25,9 @@ public class Beacon {
 
     public String getId() {
         return this.id;
+    }
+
+    public String getOrganizationName() {
+        return this.organization;
     }
 }

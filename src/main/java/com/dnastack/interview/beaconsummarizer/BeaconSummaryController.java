@@ -5,6 +5,8 @@ import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSummary;
+import com.dnastack.interview.beaconsummarizer.model.OrganizationCountSummary;
+import com.dnastack.interview.beaconsummarizer.model.OrganizationSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.TaskExecutor;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
@@ -35,7 +38,7 @@ public class BeaconSummaryController {
                                 @RequestParam String pos,
                                 @RequestParam String allele,
                                 @RequestParam String referenceAllele) throws Exception {
-
+        //TODO: could not find referenceAllele in APIs
 
         //get organizations and beacons in parallel
         CompletableFuture<List<Organization>> organizationResults = beaconLookupService.getOrganizations();
@@ -55,7 +58,10 @@ public class BeaconSummaryController {
 
         System.out.println("Retrieved beacon details: " + beaconDetails.size());
 
-        return new BeaconSummary(organizationNames, beaconIds);
+        Map<String, OrganizationCountSummary> countsByOrganization = SummarizeResultsHelper.findBeaconCountsByOrganization(beaconDetails);
+
+
+        return SummarizeResultsHelper.analyzeOrganizationCountSummary(beaconDetails, countsByOrganization, beaconIds, organizationNames);
     }
 
     private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String ref, String chrom, String pos, String allele) throws Exception {

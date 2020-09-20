@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class Query {
     private String chromosome;
-    private long position;
+    private Long position;
     private String allele;
     private String reference;
 }

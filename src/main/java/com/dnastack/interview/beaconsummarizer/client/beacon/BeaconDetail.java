@@ -6,12 +6,16 @@ import lombok.Data;
 public class BeaconDetail {
     private Beacon beacon;
     private Query query;
-    private boolean response;
+    private Boolean response;
     private String frequency;
     private String externalUrl;
 
     public Beacon getBeacon() {
         return this.beacon;
+    }
+
+    public Boolean getBeaconResponse() {
+        return this.response;
     }
 
 }
