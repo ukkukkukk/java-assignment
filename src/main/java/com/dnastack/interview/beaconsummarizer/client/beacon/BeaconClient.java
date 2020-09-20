@@ -24,7 +24,7 @@ public interface BeaconClient {
     List<BeaconDetail> getBeaconDetails(@RequestParam(value = "chrom") String chrom,
                                         @RequestParam(value = "pos") String pos,
                                         @RequestParam(value = "allele") String allele,
-                                        @RequestParam(value = "ref") String ref,
-                                        @RequestParam(value = "beacon") String beacon);
+                                        @RequestParam(value = "ref", required = false) String ref,
+                                        @RequestParam(value = "beacon", required = false) String beacon);
 
 }
