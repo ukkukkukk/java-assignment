@@ -26,9 +26,7 @@ public class BeaconLookupService {
         List<Organization> organizations = null;
 
         try {
-            organizations = beaconClient.getOrganizations()
-                    .stream()
-                    .collect(toList());
+            organizations = beaconClient.getOrganizations();
         } catch (FeignException exception) {
             System.out.println("Feign client exception occurred: " + exception.getMessage());
         }
@@ -43,9 +41,7 @@ public class BeaconLookupService {
         List<Beacon> beacons = null;
 
         try {
-            beacons = beaconClient.getBeacons()
-                    .stream()
-                    .collect(toList());
+            beacons = beaconClient.getBeacons();
         } catch (FeignException exception) {
             System.out.println("Feign client exception occurred: " + exception.getMessage());
         }
@@ -61,9 +57,7 @@ public class BeaconLookupService {
 
 
         try {
-            beaconDetails = beaconClient.getBeaconDetails(chrom, pos, allele, ref, createBeaconIdsQueryParam(beaconIds))
-                    .stream()
-                    .collect(toList());
+            beaconDetails = beaconClient.getBeaconDetails(chrom, pos, allele, ref, createBeaconIdsQueryParam(beaconIds));
         } catch (FeignException exception) {
             System.out.println("Feign client exception occurred: " + exception.getMessage());
         }
