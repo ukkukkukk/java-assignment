@@ -2,6 +2,7 @@ package com.dnastack.interview.beaconsummarizer;
 
 import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
+import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,39 +21,54 @@ public class BeaconLookupService {
     private BeaconClient beaconClient;
 
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<List<String>> getOrganizations() {
+    public CompletableFuture<List<Organization>> getOrganizations() {
         System.out.println(Thread.currentThread().getName() + " getting organizations");
-        List<String> orgNames = null;
+        List<Organization> organizations = null;
 
         try {
-            orgNames = beaconClient.getOrganizations()
+            organizations = beaconClient.getOrganizations()
                     .stream()
-                    .map(Organization::getName)
                     .collect(toList());
         } catch (FeignException exception) {
             System.out.println("Feign client exception occurred: " + exception.getMessage());
         }
 
 
-        return CompletableFuture.completedFuture(orgNames);
+        return CompletableFuture.completedFuture(organizations);
     }
 
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<List<String>> getBeacons() {
+    public CompletableFuture<List<Beacon>> getBeacons() {
         System.out.println(Thread.currentThread().getName() + " getting beacons");
-        List<String> beaconNames = null;
+        List<Beacon> beacons = null;
 
         try {
-            beaconNames = beaconClient.getBeacons()
+            beacons = beaconClient.getBeacons()
                     .stream()
-                    .map(Beacon::getName)
                     .collect(toList());
         } catch (FeignException exception) {
             System.out.println("Feign client exception occurred: " + exception.getMessage());
         }
 
 
-        return CompletableFuture.completedFuture(beaconNames);
+        return CompletableFuture.completedFuture(beacons);
+    }
+
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<List<BeaconDetail>> getBeaconDetails(String ref, String chrom, String pos, String allele, List<String> beaconIds) {
+        System.out.println(Thread.currentThread().getName() + " getting beacons details " + beaconIds);
+        List<BeaconDetail> beaconDetails = null;
+
+        try {
+            beaconDetails = beaconClient.getBeaconDetails(chrom, pos, allele, ref, beaconIds.toArray(new String[beaconIds.size()]))
+                    .stream()
+                    .collect(toList());
+        } catch (FeignException exception) {
+            System.out.println("Feign client exception occurred: " + exception.getMessage());
+        }
+
+
+        return CompletableFuture.completedFuture(beaconDetails);
     }
 
 }

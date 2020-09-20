@@ -2,6 +2,7 @@ package com.dnastack.interview.beaconsummarizer;
 
 import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
+import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSummary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 
 public class BeaconSummaryController {
 
+    static final int BATCH_SIZE = 3;
 
     @Autowired
     private BeaconLookupService beaconLookupService;
@@ -35,21 +37,64 @@ public class BeaconSummaryController {
                                 @RequestParam String referenceAllele) throws Exception {
 
 
-        CompletableFuture<List<String>> orgNamesResult = beaconLookupService.getOrganizations();
-        CompletableFuture<List<String>> beaconsResult = beaconLookupService.getBeacons();
+        //get organizations and beacons in parallel
+        CompletableFuture<List<Organization>> organizationResults = beaconLookupService.getOrganizations();
+        CompletableFuture<List<Beacon>> beaconResults = beaconLookupService.getBeacons();
 
-        List<CompletableFuture> tasks = new ArrayList<CompletableFuture>();
+        //wait for above async calls to complete
+        CompletableFuture.allOf(organizationResults, beaconResults).join();
 
-        tasks.add(orgNamesResult);
-        tasks.add(beaconsResult);
+        List<String> organizationNames = organizationResults.get().stream().map(Organization::getName).collect(toList());
 
+        List<String> beaconIds = beaconResults.get().stream().map(Beacon::getId).collect(toList());
+
+        //TODO: handle case where orgNames or beaconNames is null
+
+        //get beacon details
+        List<BeaconDetail> beaconDetails = getBeaconDetailsInBatches(beaconIds, ref, chrom, pos, allele, referenceAllele);
+
+        System.out.println("Retrieved beacon details: " + beaconDetails.size());
+
+        return new BeaconSummary(organizationNames, beaconIds);
+    }
+
+    private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String ref, String chrom, String pos, String allele, String referenceAllele) throws Exception {
+        int batchCount = 0;
+        List<String> beaconNamesCurrentBatch = new ArrayList<String>();
+        List<CompletableFuture<List<BeaconDetail>>> tasks = new ArrayList<CompletableFuture<List<BeaconDetail>>>();
+
+        System.out.println("Getting beacon details for: " + beaconIds.size());
+
+        for (int i = 0; i < beaconIds.size(); i++) {
+            beaconNamesCurrentBatch.add(beaconIds.get(i));
+            batchCount++;
+
+            //if we have reached 3 for the current batch, or last record
+            if (batchCount == BATCH_SIZE || i == beaconIds.size() - 1) {
+                //create copy for thread
+                List<String> beaconNamesForThread = new ArrayList<String>(beaconNamesCurrentBatch);
+
+                tasks.add(beaconLookupService.getBeaconDetails(ref, chrom, pos, allele, beaconNamesForThread));
+
+                batchCount = 0;
+                beaconNamesCurrentBatch.removeAll(beaconNamesCurrentBatch);
+            }
+        }
+
+        //wait for above async calls to complete
         CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).join();
 
-        List<String> orgNames = orgNamesResult.get();
-        List<String> beaconNames = beaconsResult.get();
+        List<BeaconDetail> beaconDetails = new ArrayList<BeaconDetail>();
+        //append to final list
+        for (CompletableFuture<List<BeaconDetail>> task : tasks) {
+            List<BeaconDetail> beaconDetailResults = task.get();
 
+            if (beaconDetailResults != null)
+                beaconDetails.addAll(beaconDetailResults);
+        }
 
-        return new BeaconSummary(orgNames, beaconNames);
+        return beaconDetails;
+
     }
 
 

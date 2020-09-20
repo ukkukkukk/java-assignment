@@ -2,6 +2,7 @@ package com.dnastack.interview.beaconsummarizer.client.beacon;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,5 +19,12 @@ public interface BeaconClient {
 
     @GetMapping("/api/beacons")
     List<Beacon> getBeacons();
+
+    @GetMapping("/api/responses")
+    List<BeaconDetail> getBeaconDetails(@RequestParam(value="chrom") String chrom,
+                                        @RequestParam(value="pos") String pos,
+                                        @RequestParam(value="allele") String allele,
+                                        @RequestParam(value = "ref") String ref,
+                                        @RequestParam(value="beacon") String [] beacon);
 
 }

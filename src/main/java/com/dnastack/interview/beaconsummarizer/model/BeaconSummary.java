@@ -6,12 +6,11 @@ import java.util.List;
 
 @Value
 public class BeaconSummary {
-    private List<String> organizations;
-    private List<String> beaconNames;
+    private List<String> organizationNames;
+    private List<String> beaconIds;
 
-    public BeaconSummary (List<String> organizations, List<String> beaconNames)
-    {
-        this.organizations = organizations;
-        this.beaconNames = beaconNames;
+    public BeaconSummary(List<String> organizationNames, List<String> beaconIds) {
+        this.organizationNames = organizationNames;
+        this.beaconIds = beaconIds;
     }
 }

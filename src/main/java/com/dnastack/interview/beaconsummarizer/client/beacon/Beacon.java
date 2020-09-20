@@ -19,8 +19,11 @@ public class Beacon {
     private boolean enabled;
     private List<String> supportedReferences;
 
-    public String getName ()
-    {
+    public String getName() {
         return this.name;
+    }
+
+    public String getId() {
+        return this.id;
     }
 }
