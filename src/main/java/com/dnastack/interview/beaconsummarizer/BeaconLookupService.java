@@ -59,8 +59,9 @@ public class BeaconLookupService {
         System.out.println(Thread.currentThread().getName() + " getting beacons details " + beaconIds);
         List<BeaconDetail> beaconDetails = null;
 
+
         try {
-            beaconDetails = beaconClient.getBeaconDetails(chrom, pos, allele, ref, beaconIds.toArray(new String[beaconIds.size()]))
+            beaconDetails = beaconClient.getBeaconDetails(chrom, pos, allele, ref, createBeaconIdsQueryParam(beaconIds))
                     .stream()
                     .collect(toList());
         } catch (FeignException exception) {
@@ -69,6 +70,22 @@ public class BeaconLookupService {
 
 
         return CompletableFuture.completedFuture(beaconDetails);
+    }
+
+    private String createBeaconIdsQueryParam(List<String> beaconIds) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (int i = 0; i < beaconIds.size(); i++) {
+            sb.append(beaconIds.get(i));
+
+            if (i != beaconIds.size() - 1)
+                sb.append(",");
+        }
+
+        sb.append("]");
+
+        return sb.toString();
     }
 
 }

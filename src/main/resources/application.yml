@@ -5,6 +5,8 @@ beacon:
   ribbon:
     isSecure: true
     listOfServers: https://beacon-network.org:443
+
+feign:
   client:
     config:
       default:
