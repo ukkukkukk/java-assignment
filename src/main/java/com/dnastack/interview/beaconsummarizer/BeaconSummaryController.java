@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.rmi.ServerError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,17 @@ public class BeaconSummaryController {
         //wait for above async calls to complete
         CompletableFuture.allOf(organizationResults, beaconResults).join();
 
-        List<String> organizationNames = organizationResults.get().stream().map(Organization::getName).collect(toList());
+        List<Organization> organizations = organizationResults.get();
+        List<Beacon> beacons = beaconResults.get();
 
-        List<String> beaconIds = beaconResults.get().stream().map(Beacon::getId).collect(toList());
+        if (beacons == null || organizations == null) {
+            throw new ServerError("Internal server error ", new Error());
+        }
 
-        //TODO: handle case where orgNames or beaconNames is null
+        List<String> organizationNames = organizations.stream().map(Organization::getName).collect(toList());
+
+        List<String> beaconIds = beacons.stream().map(Beacon::getId).collect(toList());
+
 
         //get beacon details
         List<BeaconDetail> beaconDetails = getBeaconDetailsInBatches(beaconIds, ref, chrom, pos, allele);
