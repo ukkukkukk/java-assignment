@@ -51,14 +51,14 @@ public class BeaconSummaryController {
         //TODO: handle case where orgNames or beaconNames is null
 
         //get beacon details
-        List<BeaconDetail> beaconDetails = getBeaconDetailsInBatches(beaconIds, ref, chrom, pos, allele, referenceAllele);
+        List<BeaconDetail> beaconDetails = getBeaconDetailsInBatches(beaconIds, ref, chrom, pos, allele);
 
         System.out.println("Retrieved beacon details: " + beaconDetails.size());
 
         return new BeaconSummary(organizationNames, beaconIds);
     }
 
-    private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String ref, String chrom, String pos, String allele, String referenceAllele) throws Exception {
+    private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String ref, String chrom, String pos, String allele) throws Exception {
         int batchCount = 0;
         List<String> beaconNamesCurrentBatch = new ArrayList<String>();
         List<CompletableFuture<List<BeaconDetail>>> tasks = new ArrayList<CompletableFuture<List<BeaconDetail>>>();
@@ -77,7 +77,7 @@ public class BeaconSummaryController {
                 tasks.add(beaconLookupService.getBeaconDetails(ref, chrom, pos, allele, beaconNamesForThread));
 
                 batchCount = 0;
-                beaconNamesCurrentBatch.removeAll(beaconNamesCurrentBatch);
+                beaconNamesCurrentBatch.clear();
             }
         }
 
