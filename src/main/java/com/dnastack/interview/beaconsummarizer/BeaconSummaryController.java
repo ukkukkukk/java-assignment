@@ -71,7 +71,7 @@ public class BeaconSummaryController {
         return SummarizeResultsHelper.analyzeOrganizationCountSummary(beaconDetails, countsByOrganization, beaconIds, organizationNames);
     }
 
-    private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String ref, String chrom, String pos, String allele) throws Exception {
+    private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String reference, String chromosome, String position, String allele) throws Exception {
         int batchCount = 0;
         List<String> beaconNamesCurrentBatch = new ArrayList<String>();
         List<CompletableFuture<List<BeaconDetail>>> tasks = new ArrayList<CompletableFuture<List<BeaconDetail>>>();
@@ -87,7 +87,7 @@ public class BeaconSummaryController {
                 //create copy for thread
                 List<String> beaconNamesForThread = new ArrayList<String>(beaconNamesCurrentBatch);
 
-                tasks.add(beaconLookupService.getBeaconDetails(ref, chrom, pos, allele, beaconNamesForThread));
+                tasks.add(beaconLookupService.getBeaconDetails(reference, chromosome, position, allele, beaconNamesForThread));
 
                 batchCount = 0;
                 beaconNamesCurrentBatch.clear();

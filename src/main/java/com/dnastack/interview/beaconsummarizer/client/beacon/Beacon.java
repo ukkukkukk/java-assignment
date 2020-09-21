@@ -19,15 +19,4 @@ public class Beacon {
     private Boolean enabled;
     private List<String> supportedReferences;
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public String getOrganizationName() {
-        return this.organization;
-    }
 }

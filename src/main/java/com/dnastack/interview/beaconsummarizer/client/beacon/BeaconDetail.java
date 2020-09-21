@@ -10,12 +10,5 @@ public class BeaconDetail {
     private String frequency;
     private String externalUrl;
 
-    public Beacon getBeacon() {
-        return this.beacon;
-    }
-
-    public Boolean getBeaconResponse() {
-        return this.response;
-    }
 
 }

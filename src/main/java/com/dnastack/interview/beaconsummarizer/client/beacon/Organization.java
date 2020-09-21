@@ -13,7 +13,5 @@ public class Organization {
     private String url;
     private String address;
 
-    public String getName() {
-        return this.name;
-    }
+
 }

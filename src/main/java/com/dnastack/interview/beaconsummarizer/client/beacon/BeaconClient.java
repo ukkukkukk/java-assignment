@@ -21,10 +21,10 @@ public interface BeaconClient {
     List<Beacon> getBeacons();
 
     @GetMapping("/api/responses")
-    List<BeaconDetail> getBeaconDetails(@RequestParam(value = "chrom") String chrom,
-                                        @RequestParam(value = "pos") String pos,
+    List<BeaconDetail> getBeaconDetails(@RequestParam(value = "chrom") String chromosome,
+                                        @RequestParam(value = "pos") String position,
                                         @RequestParam(value = "allele") String allele,
-                                        @RequestParam(value = "ref", required = false) String ref,
+                                        @RequestParam(value = "ref", required = false) String reference,
                                         @RequestParam(value = "beacon", required = false) String beacon);
 
 }

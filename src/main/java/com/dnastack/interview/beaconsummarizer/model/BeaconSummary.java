@@ -1,5 +1,6 @@
 package com.dnastack.interview.beaconsummarizer.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
 
 import java.util.List;
@@ -13,11 +14,4 @@ public class BeaconSummary {
     private Integer notResponding;
 
 
-    public BeaconSummary(List<OrganizationSummary> organizationSummaries, int found, int notFound, int notApplicable, int notResponding) {
-        this.organizations = organizationSummaries;
-        this.found = found;
-        this.notFound = notFound;
-        this.notApplicable = notApplicable;
-        this.notResponding = notResponding;
-    }
 }

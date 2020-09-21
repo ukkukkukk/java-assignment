@@ -51,13 +51,13 @@ public class BeaconLookupService {
     }
 
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<List<BeaconDetail>> getBeaconDetails(String ref, String chrom, String pos, String allele, List<String> beaconIds) {
+    public CompletableFuture<List<BeaconDetail>> getBeaconDetails(String reference, String chromosome, String position, String allele, List<String> beaconIds) {
         System.out.println(Thread.currentThread().getName() + " getting beacons details " + beaconIds);
         List<BeaconDetail> beaconDetails = null;
 
 
         try {
-            beaconDetails = beaconClient.getBeaconDetails(chrom, pos, allele, ref, createBeaconIdsQueryParam(beaconIds));
+            beaconDetails = beaconClient.getBeaconDetails(chromosome, position, allele, reference, createBeaconIdsQueryParam(beaconIds));
         } catch (FeignException exception) {
             System.out.println("Feign client exception occurred: " + exception.getMessage());
         }

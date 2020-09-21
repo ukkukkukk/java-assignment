@@ -14,7 +14,7 @@ public class SummarizeResultsHelper {
 
         for (BeaconDetail beaconDetail : beaconDetails) {
             OrganizationCountSummary currentCounts;
-            String organizationName = beaconDetail.getBeacon().getOrganizationName();
+            String organizationName = beaconDetail.getBeacon().getOrganization();
 
 
             if (countsByOrganization.containsKey(organizationName))
@@ -22,7 +22,7 @@ public class SummarizeResultsHelper {
             else
                 currentCounts = new OrganizationCountSummary();
 
-            Boolean beaconResponse = beaconDetail.getBeaconResponse();
+            Boolean beaconResponse = beaconDetail.getResponse();
 
             if (beaconResponse == null)
                 currentCounts.incrementBeaconsNotApplicableCount();
@@ -62,7 +62,7 @@ public class SummarizeResultsHelper {
             organizationSummaries.add(new OrganizationSummary(organizationName, respondedCount));
         }
 
-        organizationSummaries.sort((OrganizationSummary org1, OrganizationSummary org2) -> org2.getBeaconsRespondedCount() - org1.getBeaconsRespondedCount());
+        organizationSummaries.sort((OrganizationSummary org1, OrganizationSummary org2) -> org2.getBeacons() - org1.getBeacons());
 
         //add all the organizations that did not respond
         for (String organizationName : organizationNames) {
