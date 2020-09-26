@@ -1,18 +1,16 @@
 package com.dnastack.interview.beaconsummarizer;
 
 import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
-import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSummary;
 import com.dnastack.interview.beaconsummarizer.model.OrganizationCountSummary;
-import com.dnastack.interview.beaconsummarizer.model.OrganizationSummary;
+import com.dnastack.interview.beaconsummarizer.service.BeaconService;
+import com.dnastack.interview.beaconsummarizer.service.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,19 +29,23 @@ public class BeaconSummaryController {
     static final int BATCH_SIZE = 3;
 
     @Autowired
-    private BeaconLookupService beaconLookupService;
+    @Qualifier("beaconLookUpService")
+    private IBeaconService beaconService;
+
+
+
 
     @GetMapping("/search")
     public BeaconSummary search(@RequestParam String ref,
                                 @RequestParam String chrom,
                                 @RequestParam String pos,
                                 @RequestParam String allele,
-                                @RequestParam String referenceAllele) throws Exception {
+                                @RequestParam String referenceAllele , @RequestHeader(required = false) Map<String, String> headers ) throws Exception {
         //TODO: could not find referenceAllele in APIs
 
         //get organizations and beacons in parallel
-        CompletableFuture<List<Organization>> organizationResults = beaconLookupService.getOrganizations();
-        CompletableFuture<List<Beacon>> beaconResults = beaconLookupService.getBeacons();
+        CompletableFuture<List<Organization>> organizationResults = beaconService.getOrganizations();
+        CompletableFuture<List<Beacon>> beaconResults = beaconService.getBeacons();
 
         //wait for above async calls to complete
         CompletableFuture.allOf(organizationResults, beaconResults).join();
@@ -87,7 +89,7 @@ public class BeaconSummaryController {
                 //create copy for thread
                 List<String> beaconNamesForThread = new ArrayList<String>(beaconNamesCurrentBatch);
 
-                tasks.add(beaconLookupService.getBeaconDetails(reference, chromosome, position, allele, beaconNamesForThread));
+                tasks.add(beaconService.getBeaconDetails(reference, chromosome, position, allele, beaconNamesForThread));
 
                 batchCount = 0;
                 beaconNamesCurrentBatch.clear();

@@ -6,6 +6,7 @@ import com.dnastack.interview.beaconsummarizer.model.OrganizationCountSummary;
 import com.dnastack.interview.beaconsummarizer.model.OrganizationSummary;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SummarizeResultsHelper {
 
@@ -62,7 +63,22 @@ public class SummarizeResultsHelper {
             organizationSummaries.add(new OrganizationSummary(organizationName, respondedCount));
         }
 
-        organizationSummaries.sort((OrganizationSummary org1, OrganizationSummary org2) -> org2.getBeacons() - org1.getBeacons());
+        //sort by count, if tied, sort by alpha, in place sort
+        organizationSummaries.sort((OrganizationSummary org1, OrganizationSummary org2) -> {
+            if(org2.getBeacons() > org1.getBeacons())
+                return 1;
+            else if (org2.getBeacons() < org1.getBeacons())
+                return -1;
+            else
+            {
+                return org1.getOrganization().compareTo(org2.getOrganization());
+            }
+        });
+
+        //this creates new list
+        List<OrganizationSummary> sorted = organizationSummaries.stream().sorted(Comparator.comparing(OrganizationSummary::getBeacons).reversed().thenComparing(i -> i.getOrganization().toLowerCase())).collect(Collectors.toList());
+
+        System.out.println(sorted);
 
         //add all the organizations that did not respond
         for (String organizationName : organizationNames) {

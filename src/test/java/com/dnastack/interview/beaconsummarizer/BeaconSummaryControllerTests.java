@@ -1,12 +1,14 @@
 package com.dnastack.interview.beaconsummarizer;
 
 import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
-import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSummary;
+import com.dnastack.interview.beaconsummarizer.service.BeaconService;
+import com.dnastack.interview.beaconsummarizer.service.IBeaconService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
@@ -22,16 +24,17 @@ public class BeaconSummaryControllerTests {
     private BeaconSummaryController beaconSummaryController;
 
     @Autowired
-    private BeaconLookupService beaconLookupService;
+    @Qualifier("beaconLookUpService")
+    private IBeaconService beaconService;
 
     @Test
     public void testSearchControllerCorrectCount() throws Exception {
 
-        BeaconSummary results = beaconSummaryController.search("GRCh37", "17", "41244981", "G", "G");
+        BeaconSummary results = beaconSummaryController.search("GRCh37", "17", "41244981", "G", "G", null);
         int totalBeacons = results.getFound() + results.getNotApplicable() + results.getNotFound() + results.getNotResponding();
 
-        CompletableFuture<List<Organization>> organizationResults = beaconLookupService.getOrganizations();
-        CompletableFuture<List<Beacon>> beaconResults = beaconLookupService.getBeacons();
+        CompletableFuture<List<Organization>> organizationResults = beaconService.getOrganizations();
+        CompletableFuture<List<Beacon>> beaconResults = beaconService.getBeacons();
 
         CompletableFuture.allOf(organizationResults, beaconResults).join();
 
