@@ -36,7 +36,7 @@ public class BeaconSummaryController {
 
 
     @GetMapping("/search")
-    public BeaconSummary search(@RequestParam String ref,
+    public BeaconSummary search(@RequestParam(required = false) String ref,
                                 @RequestParam String chrom,
                                 @RequestParam String pos,
                                 @RequestParam String allele,
