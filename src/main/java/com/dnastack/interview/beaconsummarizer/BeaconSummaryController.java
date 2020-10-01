@@ -26,8 +26,6 @@ import static java.util.stream.Collectors.toList;
 
 public class BeaconSummaryController {
 
-    static final int BATCH_SIZE = 3;
-
     @Autowired
     @Qualifier("beaconLookUpService")
     private IBeaconService beaconService;
@@ -63,7 +61,7 @@ public class BeaconSummaryController {
 
 
         //get beacon details
-        List<BeaconDetail> beaconDetails = getBeaconDetailsInBatches(beaconIds, ref, chrom, pos, allele);
+        List<BeaconDetail> beaconDetails = beaconService.getBeaconDetailsInBatches(beaconIds, ref, chrom, pos, allele).get();
 
         System.out.println("Retrieved beacon details: " + beaconDetails.size());
 
@@ -73,44 +71,7 @@ public class BeaconSummaryController {
         return SummarizeResultsHelper.analyzeOrganizationCountSummary(beaconDetails, countsByOrganization, beaconIds, organizationNames);
     }
 
-    private List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String reference, String chromosome, String position, String allele) throws Exception {
-        int batchCount = 0;
-        List<String> beaconNamesCurrentBatch = new ArrayList<String>();
-        List<CompletableFuture<List<BeaconDetail>>> tasks = new ArrayList<CompletableFuture<List<BeaconDetail>>>();
 
-        System.out.println("Getting beacon details for: " + beaconIds.size());
-
-        for (int i = 0; i < beaconIds.size(); i++) {
-            beaconNamesCurrentBatch.add(beaconIds.get(i));
-            batchCount++;
-
-            //if we have reached 3 for the current batch, or last record
-            if (batchCount == BATCH_SIZE || i == beaconIds.size() - 1) {
-                //create copy for thread
-                List<String> beaconNamesForThread = new ArrayList<String>(beaconNamesCurrentBatch);
-
-                tasks.add(beaconService.getBeaconDetails(reference, chromosome, position, allele, beaconNamesForThread));
-
-                batchCount = 0;
-                beaconNamesCurrentBatch.clear();
-            }
-        }
-
-        //wait for above async calls to complete
-        CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).join();
-
-        List<BeaconDetail> beaconDetails = new ArrayList<BeaconDetail>();
-        //append to final list
-        for (CompletableFuture<List<BeaconDetail>> task : tasks) {
-            List<BeaconDetail> beaconDetailResults = task.get();
-
-            if (beaconDetailResults != null)
-                beaconDetails.addAll(beaconDetailResults);
-        }
-
-        return beaconDetails;
-
-    }
 
 
 }

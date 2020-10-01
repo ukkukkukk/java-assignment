@@ -12,4 +12,6 @@ public interface IBeaconService {
     public CompletableFuture<List<Organization>> getOrganizations();
     public CompletableFuture<List<Beacon>> getBeacons();
     public CompletableFuture<List<BeaconDetail>> getBeaconDetails(String reference, String chromosome, String position, String allele, List<String> beaconIds);
-}
+    public CompletableFuture<List<BeaconDetail>> getBeaconDetailsInBatches(List<String> beaconIds, String reference, String chromosome, String position, String allele) throws Exception;
+
+    }
