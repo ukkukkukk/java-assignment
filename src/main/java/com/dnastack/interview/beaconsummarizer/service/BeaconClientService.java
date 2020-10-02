@@ -1,4 +1,4 @@
-package com.dnastack.interview.beaconsummarizer;
+package com.dnastack.interview.beaconsummarizer.service;
 
 import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
@@ -15,12 +15,13 @@ import java.util.concurrent.CompletableFuture;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class BeaconLookupService {
+public class BeaconClientService implements IBeaconClientService {
 
     @Autowired
     private BeaconClient beaconClient;
 
     @Async("threadPoolTaskExecutor")
+    @Override
     public CompletableFuture<List<Organization>> getOrganizations() {
         System.out.println(Thread.currentThread().getName() + " getting organizations");
         List<Organization> organizations = null;
@@ -36,6 +37,7 @@ public class BeaconLookupService {
     }
 
     @Async("threadPoolTaskExecutor")
+    @Override
     public CompletableFuture<List<Beacon>> getBeacons() {
         System.out.println(Thread.currentThread().getName() + " getting beacons");
         List<Beacon> beacons = null;
@@ -51,6 +53,7 @@ public class BeaconLookupService {
     }
 
     @Async("threadPoolTaskExecutor")
+    @Override
     public CompletableFuture<List<BeaconDetail>> getBeaconDetails(String reference, String chromosome, String position, String allele, List<String> beaconIds) {
         System.out.println(Thread.currentThread().getName() + " getting beacons details " + beaconIds);
         List<BeaconDetail> beaconDetails = null;

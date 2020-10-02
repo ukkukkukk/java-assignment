@@ -9,6 +9,6 @@ beacon:
 feign:
   client:
     config:
-      default:
+      beacon:
         connectTimeout: 30000
         readTimeout: 30000
