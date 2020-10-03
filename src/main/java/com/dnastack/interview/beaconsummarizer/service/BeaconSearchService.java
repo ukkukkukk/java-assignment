@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.rmi.ServerError;
+import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +34,7 @@ public class BeaconSearchService implements IBeaconSearchService {
         List<Beacon> beacons = beaconResults.get();
 
         if (beacons == null || organizations == null) {
-            throw new ServerError("Internal server error ", new Error());
+            throw new ServerException("Internal server error. ");
         }
 
         List<String> organizationNames = organizations.stream().map(Organization::getName).collect(toList());
