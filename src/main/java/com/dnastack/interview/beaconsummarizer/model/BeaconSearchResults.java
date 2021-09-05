@@ -1,18 +1,15 @@
 package com.dnastack.interview.beaconsummarizer.model;
 
-import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
-import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.List;
 
-@Value
+@Data
+@AllArgsConstructor
 public class BeaconSearchResults {
     private List<String> organizationNames;
     private List<String> beaconIds;
     private List<BeaconDetail> beaconDetails;
-
 }
-
-

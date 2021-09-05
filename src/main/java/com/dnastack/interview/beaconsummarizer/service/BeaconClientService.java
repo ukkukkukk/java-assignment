@@ -5,6 +5,7 @@ import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconClient;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static java.util.stream.Collectors.toList;
 
+@Slf4j
 @Service
 public class BeaconClientService implements IBeaconClientService {
 
@@ -23,13 +24,13 @@ public class BeaconClientService implements IBeaconClientService {
     @Async("threadPoolTaskExecutor")
     @Override
     public CompletableFuture<List<Organization>> getOrganizations() {
-        System.out.println(Thread.currentThread().getName() + " getting organizations");
+        log.info(Thread.currentThread().getName() + " getting organizations");
         List<Organization> organizations = null;
 
         try {
             organizations = beaconClient.getOrganizations();
         } catch (FeignException exception) {
-            System.out.println("Feign client exception occurred: " + exception.getMessage());
+            log.error("Feign client exception occurred: ", exception);
         }
 
 
@@ -39,13 +40,13 @@ public class BeaconClientService implements IBeaconClientService {
     @Async("threadPoolTaskExecutor")
     @Override
     public CompletableFuture<List<Beacon>> getBeacons() {
-        System.out.println(Thread.currentThread().getName() + " getting beacons");
+        log.info(Thread.currentThread().getName() + " getting beacons");
         List<Beacon> beacons = null;
 
         try {
             beacons = beaconClient.getBeacons();
         } catch (FeignException exception) {
-            System.out.println("Feign client exception occurred: " + exception.getMessage());
+            log.error("Feign client exception occurred: " + exception);
         }
 
 
@@ -55,14 +56,14 @@ public class BeaconClientService implements IBeaconClientService {
     @Async("threadPoolTaskExecutor")
     @Override
     public CompletableFuture<List<BeaconDetail>> getBeaconDetails(String reference, String chromosome, String position, String allele, List<String> beaconIds) {
-        System.out.println(Thread.currentThread().getName() + " getting beacons details " + beaconIds);
+        log.info(Thread.currentThread().getName() + " getting beacon details " + beaconIds);
         List<BeaconDetail> beaconDetails = null;
 
 
         try {
             beaconDetails = beaconClient.getBeaconDetails(chromosome, position, allele, reference, createBeaconIdsQueryParam(beaconIds));
         } catch (FeignException exception) {
-            System.out.println("Feign client exception occurred: " + exception.getMessage());
+            log.error("Feign client exception occurred: " + exception);
         }
 
 
@@ -84,5 +85,4 @@ public class BeaconClientService implements IBeaconClientService {
 
         return sb.toString();
     }
-
 }

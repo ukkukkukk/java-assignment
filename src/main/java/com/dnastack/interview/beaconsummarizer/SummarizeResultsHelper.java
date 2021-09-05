@@ -10,7 +10,7 @@ import java.util.*;
 public class SummarizeResultsHelper {
 
     public static Map<String, OrganizationCountSummary> findBeaconCountsByOrganization(List<BeaconDetail> beaconDetails) {
-        Map<String, OrganizationCountSummary> countsByOrganization = new Hashtable<String, OrganizationCountSummary>();
+        Map<String, OrganizationCountSummary> countsByOrganization = new HashMap<>();
 
         for (BeaconDetail beaconDetail : beaconDetails) {
             OrganizationCountSummary currentCounts;
@@ -43,7 +43,7 @@ public class SummarizeResultsHelper {
     public static BeaconSummary analyzeOrganizationCountSummary(List<BeaconDetail> beaconDetails, Map<String, OrganizationCountSummary> countsByOrganization, List<String> beaconIds, List<String> organizationNames) {
 
         //analyze counts to form response
-        List<OrganizationSummary> organizationSummaries = new ArrayList<OrganizationSummary>();
+        List<OrganizationSummary> organizationSummaries = new ArrayList<>();
 
         int foundBeaconsCount = 0;
         int notFoundBeaconsCount = 0;

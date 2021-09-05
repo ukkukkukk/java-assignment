@@ -4,17 +4,17 @@ import com.dnastack.interview.beaconsummarizer.client.beacon.Beacon;
 import com.dnastack.interview.beaconsummarizer.client.beacon.BeaconDetail;
 import com.dnastack.interview.beaconsummarizer.client.beacon.Organization;
 import com.dnastack.interview.beaconsummarizer.model.BeaconSearchResults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.rmi.ServerError;
-import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
 
+@Slf4j
 @Service
 public class BeaconSearchService implements IBeaconSearchService {
 
@@ -34,7 +34,7 @@ public class BeaconSearchService implements IBeaconSearchService {
         List<Beacon> beacons = beaconResults.get();
 
         if (beacons == null || organizations == null) {
-            throw new ServerException("Internal server error. ");
+            throw new RuntimeException("Could not retrieve any beacons/organizations");
         }
 
         List<String> organizationNames = organizations.stream().map(Organization::getName).collect(toList());
@@ -45,7 +45,7 @@ public class BeaconSearchService implements IBeaconSearchService {
         //get beacon details
         List<BeaconDetail> beaconDetails = getBeaconDetailsInBatches(beaconIds, reference, chromosome, position, allele, batchSize);
 
-        System.out.println("Retrieved beacon details: " + beaconDetails.size());
+        log.info("Retrieved beacon details: " + beaconDetails.size());
 
         return new BeaconSearchResults(organizationNames, beaconIds, beaconDetails);
 
@@ -54,19 +54,19 @@ public class BeaconSearchService implements IBeaconSearchService {
     @Override
     public List<BeaconDetail> getBeaconDetailsInBatches(List<String> beaconIds, String reference, String chromosome, String position, String allele, int batchSize) throws Exception {
         int batchCount = 0;
-        List<String> beaconNamesCurrentBatch = new ArrayList<String>();
-        List<CompletableFuture<List<BeaconDetail>>> tasks = new ArrayList<CompletableFuture<List<BeaconDetail>>>();
+        List<String> beaconNamesCurrentBatch = new ArrayList<>();
+        List<CompletableFuture<List<BeaconDetail>>> tasks = new ArrayList<>();
 
-        System.out.println("Getting beacon details for: " + beaconIds.size());
+        log.info("Getting beacon details for: " + beaconIds.size());
 
         for (int i = 0; i < beaconIds.size(); i++) {
             beaconNamesCurrentBatch.add(beaconIds.get(i));
             batchCount++;
 
-            //if we have reached 3 for the current batch, or last record
+            //if we have reached the batchSize for the current batch, or last record
             if (batchCount == batchSize || i == beaconIds.size() - 1) {
                 //create copy for thread
-                List<String> beaconNamesForThread = new ArrayList<String>(beaconNamesCurrentBatch);
+                List<String> beaconNamesForThread = new ArrayList<>(beaconNamesCurrentBatch);
 
                 tasks.add(beaconClientService.getBeaconDetails(reference, chromosome, position, allele, beaconNamesForThread));
 
@@ -78,7 +78,7 @@ public class BeaconSearchService implements IBeaconSearchService {
         //wait for above async calls to complete
         CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).join();
 
-        List<BeaconDetail> beaconDetails = new ArrayList<BeaconDetail>();
+        List<BeaconDetail> beaconDetails = new ArrayList<>();
         //append to final list
         for (CompletableFuture<List<BeaconDetail>> task : tasks) {
             List<BeaconDetail> beaconDetailResults = task.get();

@@ -2,7 +2,6 @@ package com.dnastack.interview.beaconsummarizer.client.beacon;
 
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -18,5 +17,4 @@ public class Beacon {
     private Boolean visible;
     private Boolean enabled;
     private List<String> supportedReferences;
-
 }

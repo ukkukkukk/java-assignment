@@ -9,6 +9,4 @@ public class BeaconDetail {
     private Boolean response;
     private String frequency;
     private String externalUrl;
-
-
 }
